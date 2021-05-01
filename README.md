@@ -27,6 +27,14 @@ disentangled latent codes (Higgins et al. 2017).
 
     python -m src.train --config configs/default.yaml
 
+## Sample
+
+    python -m src.sample --ckpt runs/default/last.pt --out samples/
+
+## Streamlit explorer
+
+    streamlit run streamlit_app.py
+
 ## todo
 - [ ] vanilla VAE (MLP encoder/decoder)
 - [ ] beta-VAE comparison
