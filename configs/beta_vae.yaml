@@ -1,0 +1,23 @@
+# Beta-VAE config (Higgins et al. 2017). Higher beta forces more disentanglement
+# at the cost of reconstruction quality.
+
+data:
+  root: ./data
+  batch_size: 128
+  num_workers: 2
+
+model:
+  arch: mlp
+  input_dim: 784
+  hidden_dim: 400
+  latent_dim: 10
+
+train:
+  epochs: 30
+  lr: 0.001
+  beta: 4.0
+  seed: 42
+
+log:
+  out_dir: ./runs/beta4
+  save_every: 5
