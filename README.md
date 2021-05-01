@@ -8,6 +8,17 @@ two test images).
 Fashion-MNIST via `torchvision.datasets.FashionMNIST`. 60k train / 10k test, 28x28 grayscale,
 10 clothing classes (T-shirt, Trouser, Pullover, Dress, Coat, Sandal, Shirt, Sneaker, Bag, Boot).
 
+## Approach
+
+The standard VAE objective:
+
+    L = E_q(z|x)[log p(x|z)] - KL(q(z|x) || p(z))
+
+The first term is the reconstruction term (BCE for binary-ish images works fine on FMNIST).
+The second is the KL-divergence between the approximate posterior (the encoder) and the unit
+gaussian prior. The Beta-VAE multiplies the KL term by a scalar beta > 1 to encourage more
+disentangled latent codes (Higgins et al. 2017).
+
 ## todo
 - [ ] vanilla VAE (MLP encoder/decoder)
 - [ ] beta-VAE comparison
