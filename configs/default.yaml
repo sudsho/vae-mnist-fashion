@@ -1,0 +1,22 @@
+# Default config for vanilla VAE on Fashion-MNIST
+
+data:
+  root: ./data
+  batch_size: 128
+  num_workers: 2
+
+model:
+  arch: mlp
+  input_dim: 784
+  hidden_dim: 400
+  latent_dim: 20
+
+train:
+  epochs: 30
+  lr: 0.001
+  beta: 1.0
+  seed: 42
+
+log:
+  out_dir: ./runs/default
+  save_every: 5
