@@ -19,6 +19,14 @@ The second is the KL-divergence between the approximate posterior (the encoder) 
 gaussian prior. The Beta-VAE multiplies the KL term by a scalar beta > 1 to encourage more
 disentangled latent codes (Higgins et al. 2017).
 
+## Setup
+
+    pip install -r requirements.txt
+
+## Train
+
+    python -m src.train --config configs/default.yaml
+
 ## todo
 - [ ] vanilla VAE (MLP encoder/decoder)
 - [ ] beta-VAE comparison
