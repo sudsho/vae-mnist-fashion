@@ -35,6 +35,25 @@ disentangled latent codes (Higgins et al. 2017).
 
     streamlit run streamlit_app.py
 
+## Layout
+
+```
+src/
+  data.py        # FashionMNIST loader + transforms
+  model.py       # Encoder, Reparameterize, Decoder
+  loss.py        # ELBO with beta knob
+  train.py       # training loop
+  sample.py      # prior sampling, interpolation, conditional
+  visualize.py   # t-SNE + 2D latent grid
+  api/main.py    # FastAPI service
+configs/
+  default.yaml
+  beta_vae.yaml
+streamlit_app.py
+notebooks/
+tests/
+```
+
 ## todo
 - [ ] vanilla VAE (MLP encoder/decoder)
 - [ ] beta-VAE comparison
