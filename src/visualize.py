@@ -34,3 +34,17 @@ def tsne_plot(mu, y, out_path):
     plt.tight_layout()
     plt.savefig(out_path, dpi=150)
     plt.close()
+
+
+@torch.no_grad()
+def latent_grid(model, n=20, lo=-3.0, hi=3.0, device="cpu"):
+    """Only meaningful for 2D latent. Sweeps a grid in z and decodes."""
+    xs = torch.linspace(lo, hi, n)
+    ys = torch.linspace(lo, hi, n)
+    grid = torch.zeros(1, 28 * n, 28 * n)
+    for i, zy in enumerate(ys):
+        for j, zx in enumerate(xs):
+            z = torch.tensor([[zx, zy]], device=device, dtype=torch.float32)
+            img = model.decoder(z).view(28, 28).cpu()
+            grid[0, i * 28:(i + 1) * 28, j * 28:(j + 1) * 28] = img
+    return grid
