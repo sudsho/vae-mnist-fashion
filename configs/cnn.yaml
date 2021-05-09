@@ -1,0 +1,20 @@
+# CNN VAE config
+
+data:
+  root: ./data
+  batch_size: 128
+  num_workers: 2
+
+model:
+  arch: cnn
+  latent_dim: 16
+
+train:
+  epochs: 25
+  lr: 0.001
+  beta: 1.0
+  seed: 42
+
+log:
+  out_dir: ./runs/cnn
+  save_every: 5
