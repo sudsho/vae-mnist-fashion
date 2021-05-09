@@ -34,8 +34,9 @@ def reparameterize(mu, logvar):
 
 
 class VAE(nn.Module):
-    def __init__(self, input_dim=784, hidden_dim=400, latent_dim=20):
+    def __init__(self, input_dim=784, hidden_dim=400, latent_dim=20, arch="mlp"):
         super().__init__()
+        self.arch = arch
         self.encoder = Encoder(input_dim, hidden_dim, latent_dim)
         self.decoder = Decoder(latent_dim, hidden_dim, input_dim)
 
