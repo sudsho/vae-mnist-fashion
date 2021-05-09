@@ -1,7 +1,12 @@
-"""Vanilla VAE: MLP encoder, reparameterize trick, MLP decoder."""
+"""Vanilla VAE: MLP encoder, reparameterize trick, MLP decoder.
+
+Also a factory `build_vae(cfg)` that picks MLP or CNN per config.
+"""
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+from .cnn_model import ConvEncoder, ConvDecoder
 
 
 class Encoder(nn.Module):
@@ -37,12 +42,26 @@ class VAE(nn.Module):
     def __init__(self, input_dim=784, hidden_dim=400, latent_dim=20, arch="mlp"):
         super().__init__()
         self.arch = arch
-        self.encoder = Encoder(input_dim, hidden_dim, latent_dim)
-        self.decoder = Decoder(latent_dim, hidden_dim, input_dim)
+        self.latent_dim = latent_dim
+        if arch == "cnn":
+            self.encoder = ConvEncoder(latent_dim)
+            self.decoder = ConvDecoder(latent_dim)
+        else:
+            self.encoder = Encoder(input_dim, hidden_dim, latent_dim)
+            self.decoder = Decoder(latent_dim, hidden_dim, input_dim)
 
     def forward(self, x):
-        x = x.view(x.size(0), -1)
-        mu, logvar = self.encoder(x)
-        z = reparameterize(mu, logvar)
-        x_hat = self.decoder(z)
+        if self.arch == "cnn":
+            mu, logvar = self.encoder(x)
+            z = reparameterize(mu, logvar)
+            x_hat = self.decoder(z)
+        else:
+            x = x.view(x.size(0), -1)
+            mu, logvar = self.encoder(x)
+            z = reparameterize(mu, logvar)
+            x_hat = self.decoder(z)
         return x_hat, mu, logvar
+
+
+def build_vae(cfg):
+    return VAE(**cfg["model"])
