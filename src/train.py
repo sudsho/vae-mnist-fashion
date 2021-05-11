@@ -30,20 +30,36 @@ def train_one_epoch(model, loader, opt, beta, device):
     return total / len(loader.dataset)
 
 
+@torch.no_grad()
+def evaluate(model, loader, beta, device):
+    model.eval()
+    total_recon = 0.0
+    total_kl = 0.0
+    for x, _ in loader:
+        x = x.to(device)
+        x_hat, mu, logvar = model(x)
+        _, r, k = vae_loss(x_hat, x, mu, logvar, beta=beta)
+        total_recon += r.item()
+        total_kl += k.item()
+    n = len(loader.dataset)
+    return total_recon / n, total_kl / n
+
+
 def main():
     args = parse_args()
     cfg = load_config(args.config)
     set_seed(cfg["train"]["seed"])
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    train_dl, _ = get_loaders(**cfg["data"])
+    train_dl, test_dl = get_loaders(**cfg["data"])
     model = build_vae(cfg).to(device)
     opt = optim.Adam(model.parameters(), lr=cfg["train"]["lr"])
 
     out = ensure_dir(cfg["log"]["out_dir"])
     for epoch in range(cfg["train"]["epochs"]):
         avg = train_one_epoch(model, train_dl, opt, cfg["train"]["beta"], device)
-        print(f"epoch {epoch} loss {avg:.4f}")
+        r, k = evaluate(model, test_dl, cfg["train"]["beta"], device)
+        print(f"epoch {epoch} train_loss {avg:.4f} test_recon {r:.4f} test_kl {k:.4f}")
         if (epoch + 1) % cfg["log"]["save_every"] == 0:
             torch.save(model.state_dict(), os.path.join(out, f"epoch_{epoch}.pt"))
     torch.save(model.state_dict(), os.path.join(out, "last.pt"))
