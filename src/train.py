@@ -5,7 +5,7 @@ import torch
 import torch.optim as optim
 
 from .data import get_loaders
-from .model import VAE
+from .model import build_vae
 from .loss import vae_loss
 from .utils import load_config, set_seed, ensure_dir
 
@@ -37,7 +37,7 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     train_dl, _ = get_loaders(**cfg["data"])
-    model = VAE(**cfg["model"]).to(device)
+    model = build_vae(cfg).to(device)
     opt = optim.Adam(model.parameters(), lr=cfg["train"]["lr"])
 
     out = ensure_dir(cfg["log"]["out_dir"])
