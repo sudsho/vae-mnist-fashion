@@ -8,7 +8,7 @@ from .utils import ensure_dir
 
 
 def sample_prior(model, n=64, device="cpu"):
-    z = torch.randn(n, model.encoder.fc_mu.out_features, device=device)
+    z = torch.randn(n, model.latent_dim, device=device)
     with torch.no_grad():
         x = model.decoder(z)
     return x.view(-1, 1, 28, 28).cpu()
