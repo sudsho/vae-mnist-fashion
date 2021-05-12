@@ -49,3 +49,29 @@ with tab1:
         cols = st.columns(min(n, 8))
         for i in range(n):
             cols[i % 8].image(to_pil(x[i]), width=80)
+
+
+with tab2:
+    steps = st.slider("steps", 2, 20, 10)
+    if st.button("interpolate"):
+        z1 = torch.randn(1, model.latent_dim)
+        z2 = torch.randn(1, model.latent_dim)
+        alphas = torch.linspace(0, 1, steps).view(-1, 1)
+        zs = (1 - alphas) * z1 + alphas * z2
+        with torch.no_grad():
+            x = model.decoder(zs).view(-1, 28, 28)
+        cols = st.columns(steps)
+        for i in range(steps):
+            cols[i].image(to_pil(x[i]), width=64)
+
+
+with tab3:
+    if model.latent_dim != 2:
+        st.info("Latent Explorer expects latent_dim=2. Train with configs/latent2d.yaml.")
+    else:
+        zx = st.slider("z[0]", -3.0, 3.0, 0.0)
+        zy = st.slider("z[1]", -3.0, 3.0, 0.0)
+        z = torch.tensor([[zx, zy]], dtype=torch.float32)
+        with torch.no_grad():
+            x = model.decoder(z).view(28, 28)
+        st.image(to_pil(x), width=200)
