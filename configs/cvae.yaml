@@ -1,0 +1,22 @@
+# Conditional VAE config
+
+data:
+  root: ./data
+  batch_size: 128
+  num_workers: 2
+
+model:
+  arch: cvae
+  n_classes: 10
+  latent_dim: 16
+  hidden_dim: 400
+
+train:
+  epochs: 30
+  lr: 0.001
+  beta: 1.0
+  seed: 42
+
+log:
+  out_dir: ./runs/cvae
+  save_every: 5
