@@ -56,3 +56,34 @@ def generate(req: GenerateReq):
     with torch.no_grad():
         x = m.decoder(z).view(-1, 28, 28).cpu()
     return {"images": [_to_b64(x[i]) for i in range(req.n)]}
+
+
+class InterpReq(BaseModel):
+    steps: int = 10
+
+
+@app.post("/interpolate")
+def interpolate(req: InterpReq):
+    m = _load()
+    z1 = torch.randn(1, m.latent_dim)
+    z2 = torch.randn(1, m.latent_dim)
+    alphas = torch.linspace(0, 1, req.steps).view(-1, 1)
+    zs = (1 - alphas) * z1 + alphas * z2
+    with torch.no_grad():
+        x = m.decoder(zs).view(-1, 28, 28).cpu()
+    return {"images": [_to_b64(x[i]) for i in range(req.steps)]}
+
+
+class ReconReq(BaseModel):
+    image_b64: str
+
+
+@app.post("/reconstruct")
+def reconstruct(req: ReconReq):
+    m = _load()
+    raw = base64.b64decode(req.image_b64)
+    img = Image.open(io.BytesIO(raw)).convert("L").resize((28, 28))
+    arr = torch.tensor(list(img.getdata()), dtype=torch.float32).view(1, 1, 28, 28) / 255.0
+    with torch.no_grad():
+        x_hat, _, _ = m(arr)
+    return {"image": _to_b64(x_hat.view(28, 28))}
