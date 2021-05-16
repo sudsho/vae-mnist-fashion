@@ -1,4 +1,7 @@
-"""Training loop for VAE on Fashion-MNIST."""
+"""Training loop for VAE on Fashion-MNIST.
+
+Logs to MLflow if MLFLOW_TRACKING_URI is set, else prints to stdout.
+"""
 import argparse
 import os
 import torch
@@ -8,6 +11,12 @@ from .data import get_loaders
 from .model import build_vae
 from .loss import vae_loss
 from .utils import load_config, set_seed, ensure_dir
+
+try:
+    import mlflow
+    _HAS_MLFLOW = True
+except ImportError:
+    _HAS_MLFLOW = False
 
 
 def parse_args():
@@ -56,13 +65,21 @@ def main():
     opt = optim.Adam(model.parameters(), lr=cfg["train"]["lr"])
 
     out = ensure_dir(cfg["log"]["out_dir"])
+    if _HAS_MLFLOW and os.environ.get("MLFLOW_TRACKING_URI"):
+        mlflow.set_experiment("vae-fmnist")
+        mlflow.start_run()
+        mlflow.log_params({**cfg["model"], **cfg["train"]})
     for epoch in range(cfg["train"]["epochs"]):
         avg = train_one_epoch(model, train_dl, opt, cfg["train"]["beta"], device)
         r, k = evaluate(model, test_dl, cfg["train"]["beta"], device)
         print(f"epoch {epoch} train_loss {avg:.4f} test_recon {r:.4f} test_kl {k:.4f}")
+        if _HAS_MLFLOW and os.environ.get("MLFLOW_TRACKING_URI"):
+            mlflow.log_metrics({"train_loss": avg, "test_recon": r, "test_kl": k}, step=epoch)
         if (epoch + 1) % cfg["log"]["save_every"] == 0:
             torch.save(model.state_dict(), os.path.join(out, f"epoch_{epoch}.pt"))
     torch.save(model.state_dict(), os.path.join(out, "last.pt"))
+    if _HAS_MLFLOW and os.environ.get("MLFLOW_TRACKING_URI"):
+        mlflow.end_run()
 
 
 if __name__ == "__main__":
