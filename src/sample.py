@@ -22,6 +22,15 @@ def interpolate(model, z1, z2, steps=10):
     return x.view(-1, 1, 28, 28).cpu()
 
 
+@torch.no_grad()
+def conditional_sample(cvae, label, n=8):
+    """Sample for a specific class label (CVAE only)."""
+    y = torch.full((n,), int(label), dtype=torch.long)
+    y_oh = torch.nn.functional.one_hot(y, cvae.n_classes).float()
+    z = torch.randn(n, cvae.latent_dim)
+    return cvae.decoder(z, y_oh).view(-1, 1, 28, 28).cpu()
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--ckpt", required=True)
