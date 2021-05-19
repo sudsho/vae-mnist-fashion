@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    image: vae-fmnist:dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./runs:/app/runs
+    environment:
+      - VAE_CKPT=runs/default/last.pt
+    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000
+
+  ui:
+    image: vae-fmnist:dev
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./runs:/app/runs
+    command: streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
