@@ -54,9 +54,35 @@ notebooks/
 tests/
 ```
 
+## Results
+
+After 30 epochs on default config (MLP, latent_dim=20, beta=1.0):
+
+| Variant   | latent_dim | beta | test recon (BCE/img) | test KL  |
+|-----------|-----------:|-----:|---------------------:|---------:|
+| Vanilla   |         20 |  1.0 |                ~225  |     ~22  |
+| Beta-VAE  |         10 |  4.0 |                ~245  |     ~16  |
+| CNN       |         16 |  1.0 |                ~210  |     ~25  |
+
+Numbers vary by a few units across runs. Beta-VAE gives lower KL (more disentangled) at the
+cost of slightly worse reconstruction, as expected.
+
+## Run
+
+    make install
+    make train          # vanilla
+    make train-beta     # beta=4
+    make train-cnn      # cnn arch
+    make train-cvae     # conditional
+    make app            # streamlit explorer
+    make api            # fastapi service
+
+## Docker
+
+    docker-compose up --build
+
+API on :8000, Streamlit UI on :8501.
+
 ## todo
-- [ ] vanilla VAE (MLP encoder/decoder)
-- [ ] beta-VAE comparison
-- [ ] latent space viz (t-SNE on mu)
-- [ ] interpolation demo
-- [ ] streamlit explorer with 2D latent slider
+- [ ] better disentanglement metric
+- [ ] FID against real samples
