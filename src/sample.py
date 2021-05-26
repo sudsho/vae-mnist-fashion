@@ -36,10 +36,12 @@ def main():
     p.add_argument("--ckpt", required=True)
     p.add_argument("--out", default="samples")
     p.add_argument("--n", type=int, default=64)
+    p.add_argument("--latent-dim", type=int, default=20)
+    p.add_argument("--arch", default="mlp")
     args = p.parse_args()
     ensure_dir(args.out)
 
-    model = VAE()
+    model = VAE(latent_dim=args.latent_dim, arch=args.arch)
     model.load_state_dict(torch.load(args.ckpt, map_location="cpu"))
     model.eval()
     imgs = sample_prior(model, n=args.n)
