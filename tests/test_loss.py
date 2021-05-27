@@ -24,3 +24,12 @@ def test_beta_scales_kl():
     assert torch.allclose(k1, k4, atol=1e-5)
     # total grew by 3 * kl
     assert torch.allclose(t4 - t1, 3 * k1, atol=1e-3)
+
+
+def test_recon_zero_when_x_hat_equals_x():
+    """BCE is not exactly 0 even when x_hat==x because of clamping, but it is small."""
+    x = torch.full((2, 784), 0.5)
+    x_hat = x.clone()
+    _, r, _ = vae_loss(x_hat, x, torch.zeros(2, 4), torch.zeros(2, 4), beta=1.0)
+    # BCE(0.5, 0.5) = log(2) per pixel, so total = 2 * 784 * log(2) ~ 1086
+    assert r.item() > 0
