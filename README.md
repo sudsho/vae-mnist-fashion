@@ -35,6 +35,20 @@ disentangled latent codes (Higgins et al. 2017).
 
     streamlit run streamlit_app.py
 
+## Architecture
+
+```mermaid
+flowchart LR
+    X[x: 1x28x28] --> ENC[Encoder MLP/CNN]
+    ENC --> MU[mu]
+    ENC --> LV[logvar]
+    MU --> RE[Reparameterize]
+    LV --> RE
+    RE --> Z[z]
+    Z --> DEC[Decoder]
+    DEC --> XH[x_hat]
+```
+
 ## Layout
 
 ```
