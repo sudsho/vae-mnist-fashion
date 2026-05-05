@@ -1,5 +1,10 @@
 # vae-mnist-fashion
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/deploy?repository=sudsho/vae-mnist-fashion)
+
+> **Try it live**: click the badge above to one-click-deploy on Streamlit Community Cloud. The app trains a tiny VAE on first launch (~2 min) and exposes the latent-space explorer.
+
+
 Variational autoencoder on Fashion-MNIST. The plan is to train a vanilla VAE and a Beta-VAE,
 then poke around the latent space (t-SNE on means, 2D grid traversal, interpolation between
 two test images).
